@@ -26,6 +26,7 @@
 (defmacro check-assumptions [ns]
   (assert (symbol? ns) (str ns))
   `(let [all-vars# ~(->cljs-vars ns)
+         all-vars# (sort-by (comp :line meta) all-vars#)
          assumptions# (filter #(some-> % meta :test meta :assumption) all-vars#)]
      (println)
      (println "ns: " '~ns)
