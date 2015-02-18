@@ -17,15 +17,21 @@
 
 ;; RUN
 
-(defn ->cljs-vars [namespace]
+(defn- vars [namespace]
   (assert (symbol? namespace) (str namespace))
   (->> (aapi/ns-interns namespace)
     (map (fn [[k _]] `(var ~(symbol (name namespace) (name k)))))
     (into [])))
 
-(defmacro check-assumptions [ns]
+(defmacro get-vars [ns]
   (assert (symbol? ns) (str ns))
-  `(let [all-vars# ~(->cljs-vars ns)
+  `(let [all-vars# ~(vars ns)
+         all-vars# (sort-by (comp :line meta) all-vars#)]
+     all-vars#))
+
+(defmacro print-vars [ns]
+  (assert (symbol? ns) (str ns))
+  `(let [all-vars# ~(vars ns)
          all-vars# (sort-by (comp :line meta) all-vars#)
          assumptions# (filter #(some-> % meta :test meta :assumption) all-vars#)]
      (println)
@@ -37,5 +43,4 @@
      (println "1st var value nil?: " (nil? @(first all-vars#)))
      (println "1st var meta: " (-> (first all-vars#) meta))
      (println "1st var :test meta (if any): " (some-> (first all-vars#) meta :test meta))
-     (println)
-     ))
+     (println)))
