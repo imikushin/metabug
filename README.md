@@ -5,17 +5,19 @@ Macro-produced defs named without generated symbols still retain their metadata.
 
 The project in this repo is an illustration of this behaviour.
 
-## Setup
+## Tests
 
-Install npm dependencies (source map support):
-
-    lein npm install
-
-## Run
-
-To see the results, run:
+`metabug.test` namespace contains the test cases.
+The following command will compile the code to JavaScript and run it with Node.js:
 
     lein do clean, cljsbuild once
+
+
+## Setup
+
+You might need to install source map support before running the tests:
+
+    lein npm install
 
 
 ## License
