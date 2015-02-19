@@ -12,8 +12,11 @@
   (assert (symbol? name) (str name))
   `(assume-named ~(symbol (str "prefix-" name)) ~a))
 
+(defn- hashname [name & args]
+  (symbol (str name (hash (apply str name args)))))
+
 (defmacro assume [a]
-  `(assume-named ~(gensym "assume") ~a))
+  `(assume-named ~(hashname 'assume a) ~a))
 
 ;; RUN
 
