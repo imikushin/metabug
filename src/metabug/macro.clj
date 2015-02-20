@@ -5,18 +5,21 @@
 
 (defmacro assume-named [name a]
   (assert (symbol? name) (str name))
-  `(def ~(vary-meta name assoc :test `(with-meta (fn []) {:assumption true}))
+  `(def ~(vary-meta name assoc :assumption true)
      (fn [] (assert ~a (str '~a " => " ~a)))))
 
 (defmacro assume-prefix-named [name a]
   (assert (symbol? name) (str name))
   `(assume-named ~(symbol (str "prefix-" name)) ~a))
 
-(defn- hashname [name & args]
-  (symbol (str name (hash (apply str name args)))))
+(defn- hashname [[s & _ :as form]]
+  (symbol (str (name s) (hash (str form)))))
 
 (defmacro assume [a]
-  `(assume-named ~(hashname 'assume a) ~a))
+  `(assume-named ~(hashname &form) ~a))
+
+(defmacro show-form [& _]
+  `'~&form)
 
 ;; RUN
 

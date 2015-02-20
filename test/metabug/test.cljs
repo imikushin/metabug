@@ -9,21 +9,34 @@
 (deftest generated-vars-meta
   (let [vars (mb/get-vars metabug.gen-test)]
     (is (= 3 (count vars)))
-    (is (every? (fn [v] (some-> v meta :test meta :assumption)) vars)) ;; FAILS because (:test (meta v)) is nil
-    (is (every? (fn [v] (fn? @v)) vars))                    ;; FAILS because (deref v) is nil
-    ))
+    (is (every? (fn [v] (some-> v meta :assumption)) vars))
+    (is (every? (fn [v] (fn? @v)) vars))))
 
 (deftest named-vars-meta
   (let [vars (mb/get-vars metabug.named-test)]
     (is (= 3 (count vars)))
-    (is (every? (fn [v] (some-> v meta :test meta :assumption)) vars))
+    (is (every? (fn [v] (some-> v meta :assumption)) vars))
     (is (every? (fn [v] (fn? @v)) vars))))
 
 (deftest prefix-named-vars-meta
   (let [vars (mb/get-vars metabug.prefix-named-test)]
     (is (= 3 (count vars)))
-    (is (every? (fn [v] (some-> v meta :test meta :assumption)) vars))
+    (is (every? (fn [v] (some-> v meta :assumption)) vars))
     (is (every? (fn [v] (fn? @v)) vars))))
+
+(deftest show-form
+  (is (= '(mb/show-form 1 2 3)
+         (mb/show-form 1 2 3))))
+
+(defn some-fun
+  {:foo :bar :baz true}
+  [x]
+  (str x))
+
+(deftest fn-meta
+  (is (= '([x]) (-> #'some-fun meta :arglists)))
+  (is (= :bar (-> #'some-fun meta :foo)))
+  (is (-> #'some-fun meta :baz)))
 
 (defn main []
   ;(mb/print-vars metabug.named-test)
